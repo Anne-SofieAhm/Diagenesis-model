@@ -1,0 +1,63 @@
+%%                  Carbonate dissolution-precipitation model
+%
+% V6.0: Dissolution of carbonate and precipitation of diagenetic mineral
+% 08-04-2015 by Anne-Sofie C. Ahm, Revised 11-30-2015 to include Sr
+
+
+clear all; clc;
+global Fluid alpha b MgC
+
+%%                     THINGS TO PLAY WITH (Model Variables):
+%%
+
+Calcite = 0.98;              % Fraction of initial rock that is calcite (has to be > 0)
+Dolomite = 0.01;             % Fraction of initial rock that is DIAGENETIC MINERAL!
+Aragonite = 0.01;            % Fraction of initial rock that is aragonite
+
+CaEF = 1;                    % Enrichment Factor of Ca in fluid compared to seawater
+MgEF = 1;                    % Enrichment of Mg in fluid compared to seawater
+CEF = 1;                     % Enrichment of C in fluid compared to seawater
+SrEF = 1;                    % Enrichnemt of Sr compared to seawater (8.08 mg/kg)
+
+FlowRate = 1;                % Advection compared to average horizontal platform flow
+b = 0.1;                     % base line 20e-6
+time = 1e7;                  % Timespan modeled (yrs)
+box = 50;                    % Number of boxes / Sediment depth (m)
+
+% *Fractionation factors* 
+alpha.Ca = 1.0;             % Fantle&DePaolo (2007)
+alpha.O = 1.0324;           %(Cooler = larger) aragonite at 27dC = 1.0294, dolomite at 20dC = 1.0340, calcite at 10dC = 1.0324
+
+% dolomite fractionation = exp((3.14*(1e6/(273.15+TEMP)^2)-3.14)/1e3)  % Horita 2014
+% calcite = exp((2.789*(1e6/(273.15+TEMP)^2) - 2.89)/1e3)   % O'Neil, 1969; O'Neil and Friedman, 1977
+% aragonite fractionation = exp((18.45*(1e3/(273.15+TEMP)) - 32.54)/1e3)  % Böhm et al. 2000 
+
+alpha.C = 1.001;           % Zeebe p. 179 Fig 3.2.13 ~1.0029 aragonite ~1.001 calcite
+alpha.Mg = 0.998;          % Higgins&Schrag, 2012 & Fantle&Higgins, 2014
+                           % (0.998 for dolomite, 0.9955 for limestone)
+alpha.Sr = 1;
+
+% *Fluid isotopic compostion*:
+Fluid.dCa = 0;           % Seawater values
+Fluid.dMg = -0.8;
+Fluid.dC = -2; 
+Fluid.dO = -29;             % Calcite -30.5 V-PDB scale (not SMOW), -29 in the pore-waters?
+                            % SNOW = 1.03091*V-PDB + 30.91 (Coplen et al. 1983)
+Fluid.dSr = 0.386;        % 0.386 86Sr/87Sr of modern seawater
+
+% *Initial isotopic composition of the solid*
+%Calcite:                       Aragonite:              
+Solid.calc.dCa = -1.1;          Solid.arag.dCa = -1.6;       
+Solid.calc.dMg = -3.8;          Solid.arag.dMg = -3.8; % should be heavy    
+Solid.calc.dC = 3.2;            Solid.arag.dC = 5;   
+Solid.calc.dO = -2;             Solid.arag.dO = -1.5;
+Solid.calc.dSr = 0.2;         Solid.arag.dSr = 0.2; % 0.709
+
+%In aragonite, 18O is enriched by 1 permil, and 13C by 1.7 permil relative
+%to calcite (Romanek et al. 1992; Böhm et al. 2000)
+
+% *Mg/C ratio of diagenetic mineral*
+MgC =  0.5;       % 0.025                   
+% Dolomite = 0.5
+% HMC = 0.12; % Burdige et al. 2012
+% Calcite = 0.08; % Burdige et al. 2012

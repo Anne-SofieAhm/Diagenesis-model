@@ -3,7 +3,7 @@
 % V6.0: Dissolution of carbonate and precipitation of diagenetic mineral
 % 08-04-2015 by Anne-Sofie C. Ahm 
 % Revised 11-30-2015 to include Sr
-% Publiced in Ahm et al. (2018) GCA Vol. XX No. XX pp. 
+% Published in Ahm et al. (2018) GCA Vol. XX No. XX pp. 
 
 clear all; clc;
 global Fluid alpha R M
